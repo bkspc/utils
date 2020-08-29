@@ -24,9 +24,9 @@ cd 2012.08
 make menuconfig
 ```
 
-i. set target architecture ARM (little endian)
-i. set toolchain uClibc C library version 0.9.32.x
-i. exit > save config
+1. set target architecture ARM (little endian)
+2. set toolchain uClibc C library version 0.9.32.x
+3. exit > save config
 
 ```
 make MAKEINFO=true
