@@ -1,7 +1,9 @@
 # building dropbear for pldthomefibr an5506-04-fa
 
-# vagrant ubuntu xenial
+NOTE: This is done under Ubuntu Xenial
+## Prepare buildroot
 
+```
 sudo apt install build-essential libncurses5-dev bison flex gettext texinfo python unzip
 
 sudo apt remove gcc-5 g++-5
@@ -14,37 +16,49 @@ wget https://github.com/buildroot/buildroot/archive/2012.08.tar.gz
 
 tar xf 2012.08.tar.gz
 
+cd 2012.08
+```
+
+## Configure buildroot
+```
 make menuconfig
+```
 
-set target architecture ARM (little endian)
+i. set target architecture ARM (little endian)
+i. set toolchain uClibc C library version 0.9.32.x
+i. exit > save config
 
-set toolchain uClibc C library version 0.9.32.x
-
-exit > save config
-
+```
 make MAKEINFO=true
+```
 
-# for example we'll go ahead and build dropbear
+## Build dropbear
 
-# optional step: configure dropbear first on make menuconfig
+_optional step: configure dropbear first on make menuconfig_
 
+```
 make dropbear
+```
 
 move output/target/usr/sbin/dropbear to your device at /bin/dropbear.
 
 setup symlinks
 
+```
+# on router
 ln -s /bin/dropbear /bin/dropbearconvert
 ln -s /bin/dropbear /bin/dropbearkey
+```
 
 create authorized_keys and hostkey file at /bin
 
-# optional add banner
+### optional add banner
 
-# /fh/extend/start_dropbear.sh
+Prepare a banner at `/fh/extend/pldt-banner.txt`
 
+Make a script `### /fh/extend/start_dropbear.sh`
 ```
-#/bin/sh
+#!/bin/sh
 
 #open dropbear port
 iptables -I INPUT -p tcp --dport 2222 -j ACCEPT
@@ -53,10 +67,12 @@ iptables -I INPUT -p tcp --dport 2222 -j ACCEPT
 dropbear -r /bin/hostkey -p 2222 -b /fh/extend/pldt-banner.txt
 ```
 
-at the bottom of the file add /fh/extend/start_dropbear.sh to initialize.sh
+at the bottom of the file add `/fh/extend/start_dropbear.sh` to `initialize.sh`
 
 reboot
 
-# connect to your device 
+## connect to your device
 
+```
 ssh root@192.168.1.1 -p 2222 -oKexAlgorithms=+diffie-hellman-group1-sha1
+```
